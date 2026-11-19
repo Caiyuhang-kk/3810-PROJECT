@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+<%
+  const values = loan || {};
+  const isEdit = /\/update$/.test(action);
+  const borrowValue = values.borrowDate || '';
+  const dueValue = values.dueDate || '';
+%>
+<a class="back-link" href="/loans"><span aria-hidden="true">←</span> 返回设备列表</a>
+<section class="page-heading"><div><p class="eyebrow"><%= isEdit ? '更新信息' : '建立库存' %></p><h1><%= isEdit ? '编辑设备' : '新增设备' %></h1><p class="muted"><%= isEdit ? '登记设备借出，或在归还后改回可借。' : '先建立一台可供借用的设备。' %></p></div></section>
+<div class="form-layout">
+  <section class="panel form-panel" aria-label="设备表单">
+    <% if (error) { %>
+      <div class="alert alert-error" role="alert"><strong>未能保存记录</strong><p><%= error %></p></div>
+    <% } %>
+    <form action="<%= action %>" method="post" class="form-stack">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <p class="muted small">设备编号必须唯一；借出时必须填写借用人、借用日期和应还日期，期限为1–14天。</p>
+      <div class="form-columns">
+        <div class="field"><label for="itemCode">设备编号</label><input id="itemCode" name="itemCode" type="text" value="<%= values.itemCode || '' %>" maxlength="20" placeholder="例如：CAM-001" required autofocus></div>
+        <div class="field"><label for="itemName">设备名称</label><input id="itemName" name="itemName" type="text" value="<%= values.itemName || '' %>" maxlength="80" placeholder="例如：Canon EOS R50" required></div>
+      </div>
+      <div class="form-columns">
+        <div class="field"><label for="category">设备类别</label><select id="category" name="category" required><option value="">请选择类别</option><% for (const [value, label] of Object.entries(categoryLabels)) { %><option value="<%= value %>" <%= values.category === value ? 'selected' : '' %>><%= label %></option><% } %></select></div>
+        <div class="field"><label for="condition">设备状况</label><select id="condition" name="condition" required><% for (const [value, label] of Object.entries(conditionLabels)) { %><option value="<%= value %>" <%= (values.condition || 'good') === value ? 'selected' : '' %>><%= label %></option><% } %></select></div>
+      </div>
+      <div class="field"><label for="notes">设备备注</label><textarea id="notes" name="notes" maxlength="300" rows="3" placeholder="例如：屏幕左下角有划痕"><%= values.notes || '' %></textarea></div>
+      <div class="field"><label for="borrower">借用人</label><input id="borrower" name="borrower" type="text" value="<%= values.borrower || '' %>" maxlength="80" placeholder="设备借出时填写姓名或学号"></div>
+      <div class="form-columns">
+        <div class="field"><label for="contactPhone">联系电话</label><input id="contactPhone" name="contactPhone" type="tel" value="<%= values.contactPhone || '' %>" maxlength="30" placeholder="例如：9123 4567"></div>
+        <div class="field"><label for="contactEmail">联系邮箱</label><input id="contactEmail" name="contactEmail" type="email" value="<%= values.contactEmail || '' %>" maxlength="120" placeholder="例如：student@connect.hku.hk"></div>
+      </div>
+      <div class="form-columns">
+        <div class="field"><label for="borrowDate">借用日期</label><input id="borrowDate" name="borrowDate" type="date" value="<%= borrowValue %>" aria-describedby="borrow-help"><span id="borrow-help" class="field-help">借出时必填。</span></div>
+        <div class="field"><label for="dueDate">应还日期</label><input id="dueDate" name="dueDate" type="date" value="<%= dueValue %>" aria-describedby="due-help"><span id="due-help" class="field-help">须晚1–14天；超过后显示逾期。</span></div>
+      </div>
+      <div class="form-columns">
+        <div class="field"><label for="status">设备状态</label><select id="status" name="status" required><% for (const [value, label] of Object.entries(statusLabels)) { %><option value="<%= value %>" <%= (values.status || 'available') === value ? 'selected' : '' %>><%= label %></option><% } %></select></div>
+      </div>
+      <div class="form-actions"><button class="button button-primary" type="submit"><%= isEdit ? '保存修改' : '新增设备' %></button><a class="button button-secondary" href="/loans">取消</a></div>
+    </form>
+  </section>
+  <aside class="form-aside"><span class="aside-mark" aria-hidden="true">i</span><h2>设备管理提示</h2><p>新增设备时填写唯一编号。</p><p>正常借出：选择“正常 + 借出中”，期限最少1天、最多14天。</p><p>逾期会显示红色提示，由管理员联系借用人；不计算费用。</p><p>完好归还：选择“正常 + 可借”。损坏归还：选择“损坏 + 停用”并写备注。</p></aside>
+</div>
+<%- include('partials/footer') %>

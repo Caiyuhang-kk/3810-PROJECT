@@ -1,0 +1,8 @@
+<%- include('partials/header') %>
+<section class="panel error-page" aria-labelledby="error-heading">
+  <p class="error-code"><%= status %></p>
+  <h1 id="error-heading"><%= title %></h1>
+  <p class="muted"><%= message %></p>
+  <a class="button button-primary" href="<%= user ? '/loans' : '/login' %>"><%= user ? '返回设备列表' : '返回登录' %></a>
+</section>
+<%- include('partials/footer') %>

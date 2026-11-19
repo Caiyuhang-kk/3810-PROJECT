@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<section class="login-layout" aria-labelledby="login-heading">
+  <div class="login-intro">
+    <p class="eyebrow">CAMPUS EQUIPMENT / 借用管理</p>
+    <h1>每一次借用，<br>都有记录。</h1>
+    <p class="intro-copy">从登记到归还，集中管理校园设备的借用情况，让设备流转清晰可查。</p>
+    <div class="intro-features">
+      <div><span class="feature-number">01</span><span>登记设备与借用人</span></div>
+      <div><span class="feature-number">02</span><span>查询借用与归还记录</span></div>
+      <div><span class="feature-number">03</span><span>及时发现逾期设备</span></div>
+    </div>
+  </div>
+  <div class="panel login-panel">
+    <p class="eyebrow">欢迎回来</p>
+    <h2 id="login-heading">登录管理系统</h2>
+    <p class="muted">请使用管理员为你创建的账号。</p>
+    <% if (error) { %>
+      <div class="alert alert-error" role="alert"><strong>登录未成功</strong><p><%= error %></p></div>
+    <% } %>
+    <form action="/login" method="post" class="form-stack">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field">
+        <label for="username">用户名</label>
+        <input id="username" name="username" type="text" value="<%= username || '' %>" autocomplete="username" maxlength="80" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">密码</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="button button-primary button-full" type="submit">登录</button>
+    </form>
+    <p class="login-note">登录后可查看设备库存，登记借出和归还。</p>
+  </div>
+</section>
+<%- include('partials/footer') %>

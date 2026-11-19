@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<%
+  const id = String(loan._id || loan.id);
+  const formatDate = value => {
+    if (!value) return '—';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value) : date.toISOString().slice(0, 10);
+  };
+%>
+<a class="back-link" href="/loans"><span aria-hidden="true">←</span> 返回设备列表</a>
+<section class="page-heading">
+  <div><p class="eyebrow">设备详情</p><h1><%= loan.itemName %></h1><p class="muted">查看设备状态，登记借出或归还。</p></div>
+  <a class="button button-primary" href="/loans/<%= id %>/edit"><%= loan.status === 'available' ? '登记借出' : loan.status === 'borrowed' ? '登记归还' : '更新设备' %></a>
+</section>
+<% if (loan.overdue) { %>
+  <div class="alert alert-warning" role="status"><strong>这笔借用已逾期</strong><p>应还日期为 <%= formatDate(loan.dueDate) %>，请联系借用人确认归还安排。</p></div>
+<% } %>
+<section class="panel detail-panel" aria-label="设备信息">
+  <div class="section-heading"><h2>设备信息</h2><span class="badge badge-<%= loan.status %>"><%= statusLabels[loan.status] || loan.status %></span></div>
+  <dl class="detail-grid">
+    <div><dt>设备编号</dt><dd><strong><%= loan.itemCode %></strong></dd></div>
+    <div><dt>设备名称</dt><dd><%= loan.itemName %></dd></div>
+    <div><dt>设备类别</dt><dd><%= categoryLabels[loan.category] || loan.category %></dd></div>
+    <div><dt>设备状况</dt><dd><%= conditionLabels[loan.condition] || loan.condition %></dd></div>
+    <div><dt>借用人</dt><dd><%= loan.borrower || '—' %></dd></div>
+    <div><dt>联系电话</dt><dd><%= loan.contactPhone || '—' %></dd></div>
+    <div><dt>联系邮箱</dt><dd><%= loan.contactEmail || '—' %></dd></div>
+    <div><dt>借用日期</dt><dd><time datetime="<%= formatDate(loan.borrowDate) %>"><%= formatDate(loan.borrowDate) %></time></dd></div>
+    <div><dt>应还日期</dt><dd><time datetime="<%= formatDate(loan.dueDate) %>"><%= formatDate(loan.dueDate) %></time></dd></div>
+    <div class="detail-wide"><dt>设备备注</dt><dd><%= loan.notes || '—' %></dd></div>
+    <div class="detail-wide"><dt>记录编号</dt><dd class="record-id"><%= id %></dd></div>
+  </dl>
+  <div class="detail-footer"><p class="muted small"><%= loan.status === 'available' ? '设备当前可借；点击“登记借出”填写借用信息。' : loan.status === 'borrowed' ? '归还完好设备时改为“正常 + 可借”；损坏时改为“损坏 + 停用”。' : '损坏设备不能借出；维修后改为“正常 + 可借”。' %></p></div>
+</section>
+<section class="delete-section" aria-label="删除记录">
+  <div><h2>删除设备</h2><p class="muted small">仅用于移除错误或停止使用的设备。</p></div>
+  <form action="/loans/<%= id %>/delete" method="post" data-confirm="确认删除设备「<%= loan.itemName %>」？删除后无法恢复。">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button class="button button-danger" type="submit">删除这台设备</button>
+  </form>
+</section>
+<%- include('partials/footer') %>
