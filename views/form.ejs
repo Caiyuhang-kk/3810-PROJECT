@@ -98,33 +98,4 @@
   </section>
 </div>
 
-<!-- UI Interactivity Script -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const conditionSelect = document.getElementById('condition');
-    const statusSelect = document.getElementById('status');
-    const borrowFields = document.getElementById('borrow-fields');
-
-    function toggleForm() {
-      const isBorrowed = statusSelect.value === 'borrowed';
-      const isDamaged = conditionSelect.value === 'damaged';
-
-      // Show/hide borrower info
-      borrowFields.style.display = isBorrowed ? 'block' : 'none';
-      
-      // Rule 1: Damaged -> Unavailable
-      if (isDamaged && statusSelect.value !== 'unavailable') {
-        statusSelect.value = 'unavailable';
-      }
-      // Rule 2: Good -> Cannot be Unavailable
-      if (!isDamaged && statusSelect.value === 'unavailable') {
-        statusSelect.value = 'available';
-      }
-    }
-
-    conditionSelect.addEventListener('change', toggleForm);
-    statusSelect.addEventListener('change', toggleForm);
-    toggleForm(); // Trigger on page load
-  });
-</script>
 <%- include('partials/footer') %>
