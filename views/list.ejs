@@ -1,91 +1,88 @@
 <%- include('partials/header') %>
-<%
-  const shownBorrowed = loans.filter(item => item.status === 'borrowed').length;
-  const shownAvailable = loans.filter(item => item.status === 'available').length;
-  const shownUnavailable = loans.filter(item => item.status === 'unavailable').length;
-  const shownOverdue = loans.filter(item => item.overdue).length;
-  const formatDate = value => {
-    if (!value) return '—';
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? String(value) : date.toISOString().slice(0, 10);
-  };
-%>
 <section class="page-heading">
   <div>
-    <p class="eyebrow">设备管理</p>
-    <h1>设备库存</h1>
-    <p class="muted">先建立可借设备，再登记借出和归还。</p>
+    <p class="eyebrow">EQUIPMENT MANAGEMENT</p>
+    <h1>Loan Records</h1>
+    <p class="muted">View equipment location and track return progress.</p>
   </div>
-  <a class="button button-primary" href="/loans/new"><span aria-hidden="true">＋</span> 新增设备</a>
+  <a class="button button-primary" href="/loans/new"><span aria-hidden="true">＋</span> New Equipment</a>
 </section>
+
 <% if (notice) { %>
   <div class="alert alert-success" role="status"><%= notice %></div>
 <% } %>
-<section class="summary-grid" aria-label="当前显示记录的统计">
-  <div class="summary-card"><span class="summary-label">当前显示</span><strong><%= loans.length %><span>台设备</span></strong></div>
-  <div class="summary-card"><span class="summary-label">其中可借</span><strong><%= shownAvailable %><span>台设备</span></strong></div>
-  <div class="summary-card"><span class="summary-label">其中借出中</span><strong><%= shownBorrowed %><span>台设备</span></strong></div>
-  <div class="summary-card"><span class="summary-label">其中停用</span><strong><%= shownUnavailable %><span>台设备</span></strong></div>
-  <div class="summary-card summary-warning"><span class="summary-label">其中已逾期</span><strong><%= shownOverdue %><span>条记录</span></strong></div>
-</section>
-<section class="panel records-panel" aria-labelledby="records-heading">
-  <div class="section-heading"><h2 id="records-heading">记录列表</h2><span class="muted small">统计随搜索条件变化</span></div>
-  <form class="search-form" method="get" action="/loans" role="search" aria-label="筛选设备">
+
+<section class="panel records-panel">
+  <!-- Search Form -->
+  <form class="search-form" method="get" action="/loans" role="search">
     <div class="field search-keyword">
-      <label for="q">关键词</label>
-      <input id="q" name="q" type="search" value="<%= query.q || '' %>" placeholder="搜索设备编号或名称" maxlength="80">
+      <label for="q">Keyword</label>
+      <input id="q" name="q" type="search" value="<%= query.q || '' %>" placeholder="Search item code or name" maxlength="80">
     </div>
     <div class="field">
-      <label for="category">设备类别</label>
+      <label for="category">Category</label>
       <select id="category" name="category">
-        <option value="">全部类别</option>
-        <% for (const [value, label] of Object.entries(categoryLabels)) { %>
-          <option value="<%= value %>" <%= query.category === value ? 'selected' : '' %>><%= label %></option>
-        <% } %>
+        <option value="">All Categories</option>
+        <option value="tablet" <%= query.category === 'tablet' ? 'selected' : '' %>>Tablet</option>
+        <option value="laptop" <%= query.category === 'laptop' ? 'selected' : '' %>>Laptop</option>
+        <option value="camera" <%= query.category === 'camera' ? 'selected' : '' %>>Camera</option>
       </select>
     </div>
     <div class="field">
-      <label for="status">设备状态</label>
+      <label for="status">Status</label>
       <select id="status" name="status">
-        <option value="">全部状态</option>
-        <% for (const [value, label] of Object.entries(statusLabels)) { %>
-          <option value="<%= value %>" <%= query.status === value ? 'selected' : '' %>><%= label %></option>
-        <% } %>
+        <option value="">All Status</option>
+        <option value="available" <%= query.status === 'available' ? 'selected' : '' %>>Available</option>
+        <option value="borrowed" <%= query.status === 'borrowed' ? 'selected' : '' %>>Borrowed</option>
+        <option value="unavailable" <%= query.status === 'unavailable' ? 'selected' : '' %>>Unavailable</option>
       </select>
     </div>
-    <div class="search-actions"><button class="button button-primary" type="submit">搜索</button><a class="button button-secondary" href="/loans">重置</a></div>
+    <div class="search-actions">
+      <button class="button button-primary" type="submit">Search</button>
+      <a class="button button-secondary" href="/loans">Reset</a>
+    </div>
   </form>
+
+  <!-- Record List -->
   <% if (!loans.length) { %>
     <div class="empty-state">
-      <div class="empty-symbol" aria-hidden="true">▤</div>
-      <h3><%= query.q || query.category || query.status ? '没有符合条件的设备' : '还没有设备' %></h3>
-      <p class="muted"><%= query.q || query.category || query.status ? '试试其他关键词，或重置筛选条件。' : '先加入第一台可借设备。' %></p>
-      <a class="button button-secondary" href="<%= query.q || query.category || query.status ? '/loans' : '/loans/new' %>"><%= query.q || query.category || query.status ? '查看全部设备' : '新增设备' %></a>
+      <h3><%= query.q || query.category || query.status ? 'No matching records found' : 'No equipment records yet' %></h3>
+      <p class="muted"><%= query.q || query.category || query.status ? 'Try different keywords, or reset filters.' : 'Register the first equipment to start managing.' %></p>
+      <a class="button button-secondary" href="<%= query.q || query.category || query.status ? '/loans' : '/loans/new' %>"><%= query.q || query.category || query.status ? 'View All' : 'New Equipment' %></a>
     </div>
   <% } else { %>
-    <div class="table-scroll" role="region" aria-label="设备表格，可横向滚动" tabindex="0">
+    <div class="table-scroll">
       <table>
-        <caption class="visually-hidden">当前筛选条件下的 <%= loans.length %> 台设备</caption>
-        <thead><tr><th scope="col">编号</th><th scope="col">设备</th><th scope="col">类别</th><th scope="col">状况</th><th scope="col">借用人</th><th scope="col">借用日期</th><th scope="col">应还日期</th><th scope="col">状态</th><th scope="col" class="actions-heading">操作</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Code</th><th>Name</th><th>Category</th><th>Condition</th><th>Status</th><th>Borrower</th><th>Due Date</th><th class="actions-heading">Actions</th>
+          </tr>
+        </thead>
         <tbody>
-          <% for (const loan of loans) { const id = String(loan._id || loan.id); %>
-            <tr>
+          <% for (const loan of loans) { const id = String(loan._id); %>
+            <tr class="<%= loan.status === 'unavailable' ? 'row-disabled' : '' %>">
               <td><strong><%= loan.itemCode %></strong></td>
-              <td><a class="record-name" href="/loans/<%= id %>"><%= loan.itemName %></a></td>
-              <td><%= categoryLabels[loan.category] || loan.category %></td>
-              <td><%= conditionLabels[loan.condition] || loan.condition %></td>
+              <td><%= loan.itemName %></td>
+              <td><%= loan.category.charAt(0).toUpperCase() + loan.category.slice(1) %></td>
+              <td><%= loan.condition.charAt(0).toUpperCase() + loan.condition.slice(1) %></td>
+              <td>
+                <span class="badge badge-<%= loan.status %>"><%= loan.status.charAt(0).toUpperCase() + loan.status.slice(1) %></span>
+                <% if (loan.status === 'borrowed' && loan.overdue) { %>
+                  <span class="overdue-text">Overdue</span>
+                <% } %>
+              </td>
               <td><%= loan.borrower || '—' %></td>
-              <td class="date-cell"><time datetime="<%= formatDate(loan.borrowDate) %>"><%= formatDate(loan.borrowDate) %></time></td>
-              <td class="date-cell"><time datetime="<%= formatDate(loan.dueDate) %>"><%= formatDate(loan.dueDate) %></time><% if (loan.overdue) { %><span class="overdue-text">已逾期</span><% } %></td>
-              <td><span class="badge badge-<%= loan.status %>"><%= statusLabels[loan.status] || loan.status %></span></td>
-              <td><div class="row-actions">
-                <a href="/loans/<%= id %>" aria-label="查看 <%= loan.itemName %> 的详情">详情</a>
-                <a href="/loans/<%= id %>/edit" aria-label="编辑 <%= loan.itemName %>">编辑</a>
-                <form action="/loans/<%= id %>/delete" method="post" data-confirm="确认删除设备「<%= loan.itemName %>」？删除后无法恢复。">
-                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                  <button class="text-button text-danger" type="submit" aria-label="删除 <%= loan.itemName %> 的记录">删除</button>
-                </form>
-              </div></td>
+              <td class="date-cell"><%= loan.dueDate || '—' %></td>
+              <td>
+                <div class="row-actions">
+                  <a href="/loans/<%= id %>">View</a>
+                  <a href="/loans/<%= id %>/edit">Edit</a>
+                  <form action="/loans/<%= id %>/delete" method="post" data-confirm="Are you sure you want to delete <%= loan.itemName %>?">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="text-button text-danger" type="submit">Delete</button>
+                  </form>
+                </div>
+              </td>
             </tr>
           <% } %>
         </tbody>

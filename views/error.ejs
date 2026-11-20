@@ -1,8 +1,13 @@
 <%- include('partials/header') %>
-<section class="panel error-page" aria-labelledby="error-heading">
-  <p class="error-code"><%= status %></p>
-  <h1 id="error-heading"><%= title %></h1>
-  <p class="muted"><%= message %></p>
-  <a class="button button-primary" href="<%= user ? '/loans' : '/login' %>"><%= user ? '返回设备列表' : '返回登录' %></a>
+
+<section class="panel error-page" aria-labelledby="error-heading" style="text-align: center; padding: 60px 20px; max-width: 600px; margin: 50px auto;">
+  <p class="error-code" style="font-size: 64px; font-weight: bold; color: #245c48; margin-bottom: 10px;"><%= status %></p>
+  <h1 id="error-heading" style="font-size: 24px; margin-bottom: 15px;"><%= title %></h1>
+  <p class="muted" style="margin-bottom: 30px; color: #66766f;"><%= message %></p>
+  
+  <a class="button button-primary" href="<%= user ? '/loans' : '/login' %>" style="display: inline-block; padding: 10px 20px; background-color: #245c48; color: white; text-decoration: none; border-radius: 6px;">
+    <%= user ? 'Back to Loan Records' : 'Back to Login' %>
+  </a>
 </section>
+
 <%- include('partials/footer') %>

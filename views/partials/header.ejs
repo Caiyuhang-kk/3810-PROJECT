@@ -1,35 +1,32 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <title><%= title %> · 校园设备借用登记</title>
+  <title><%= title %> · Campus Equipment Loan</title>
   <link rel="stylesheet" href="/styles.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="<%= user ? '/loans' : '/login' %>">
-        <span class="brand-mark" aria-hidden="true">借</span>
-        <span>校园设备<span class="brand-subtitle">借用登记</span></span>
+        <span class="brand-mark" aria-hidden="true">L</span>
+        <span>Campus Equipment<span class="brand-subtitle">Loan Register</span></span>
       </a>
       <% if (user) { %>
-        <nav class="main-nav" aria-label="主导航">
-          <a class="nav-link <%= currentPath === '/loans' ? 'active' : '' %>" href="/loans" <%- currentPath === '/loans' ? 'aria-current="page"' : '' %>>设备库存</a>
-          <a class="nav-link <%= currentPath === '/loans/new' ? 'active' : '' %>" href="/loans/new" <%- currentPath === '/loans/new' ? 'aria-current="page"' : '' %>>新增设备</a>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a class="nav-link <%= currentPath === '/loans' ? 'active' : '' %>" href="/loans">Loan Records</a>
+          <a class="nav-link <%= currentPath === '/loans/new' ? 'active' : '' %>" href="/loans/new">New Equipment</a>
         </nav>
         <div class="account">
           <span class="account-name"><span class="account-dot" aria-hidden="true"></span><%= user.username %></span>
           <form action="/logout" method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button class="button button-quiet button-small" type="submit">退出</button>
+            <button class="button button-quiet button-small" type="submit">Logout</button>
           </form>
         </div>
-      <% } else { %>
-        <span class="header-label">CAMPUS EQUIPMENT</span>
       <% } %>
     </div>
   </header>
