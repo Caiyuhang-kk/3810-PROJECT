@@ -53,15 +53,15 @@ function createApp({ loanStore, userStore, sessionSecret, sessionStore, secureCo
   app.use(makeAuth(userStore));
   app.use('/loans', requireLogin, makeWeb(loanStore, now));
   app.use((req, res) => res.status(404).render('error', {
-    title: '页面不存在', status: 404, message: '找不到此页面，请从导航返回。'
+    title: 'Page Not Found', status: 404, message: 'The page you are looking for does not exist.'
   }));
   app.use((err, req, res, next) => {
     if (res.headersSent) return next(err);
     const status = Number.isInteger(err.status) && err.status >= 400 && err.status <= 599 ? err.status : 500;
-    const message = status >= 500 ? '服务暂时无法完成请求，请稍后重试。' :
+    const message = status >= 500 ? 'The server is temporarily unable to complete the request. Please try again later.' :
       err.type === 'entity.parse.failed' ? '请求JSON格式错误。' : err.message;
     if (req.path === '/api' || req.path.startsWith('/api/')) return res.status(status).json({ error: message });
-    res.status(status).render('error', { title: '操作未完成', status, message });
+    res.status(status).render('error', { title: 'Action Failed', status, message });
   });
   return app;
 }
